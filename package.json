@@ -1,5 +1,5 @@
 {
-  "name": "bot1",
+  "name": "qnamakerbot",
   "version": "1.0.0",
   "description": "meu primeiro chatbot",
   "main": "app.js",

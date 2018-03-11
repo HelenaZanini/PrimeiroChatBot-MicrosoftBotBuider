@@ -1,59 +1,50 @@
-var builder = require('botbuilder');
+// Dependencias
+const builder = require('botbuilder');
+const restify = require('restify');
+const cognitiveservices = require('botbuilder-cognitiveservices');
 
-var connector = new builder.ConsoleConnector().listen();
+// Setup do servidor
+const port = process.env.port || 3978;
+const server = restify.createServer();
 
-var restify = require('restify');
+server.listen(port, () => {console.log(`Servidor rodando em ${server.url}`);});
 
-var cognitiveservices = require('botbuilder-cognitiveservices');
-
-// Setup Restify Server
-var server = restify.createServer();
-server.listen(process.env.port || process.env.PORT || 3978, function () {
-   console.log('%s listening to %s', server.name, server.url); 
-});
-
-// Crie um chat conector para se comunicar com o Bot Framework Service
-var connector = new builder.ChatConnector({
-    appId: process.env.MICROSOFT_APP_ID,
-    appPassword: process.env.MICROSOFT_APP_PASSWORD
-});
+// Criação de um canal de comunicação com o Bot Framework Service
+const connector = new builder.ChatConnector(
+    {
+        appId: '',
+        appPassword: '',
+    }
+);
 
 // Endpoint que irá monitorar as mensagens do usuário
 server.post('/api/messages', connector.listen());
 
 // Recebe as mensagens do usuário
+const bot = new builder.UniversalBot(connector);
 
-var bot = new builder.UniversalBot(connector) 
-/* {
-    
-    var userMessage = session.message.text;
-    
-    function resposta() {
-        if (ola.indexOf(userMessage) > -1) {
-            return "Oi, tudo bem?";    
-        } else if (tudoBem.indexOf(userMessage) > -1) {
-            return "Estou bem tbm :)";
-        } else {
-            return "Não conheço o significado dessa palavra ou frase";
-        }
-    }    
+// Cria uma biblioteca de resposta 
+/* const qnaMakerTools = new cognitiveservices.QnAMakerTools();
+bot.library(qnaMakerTools.createLibrary); */
 
-    session.send(resposta());
-}); */ 
+// Reconhce a base do QnA Maker de acordo com a Id e SubKey especificada
+const recognizer = new cognitiveservices.QnAMakerRecognizer(
+    {
+        knowledgeBaseId: '',
+        subscriptionKey: '',
+        top: 1 // quantidade de respostas, por padrão é 1, e uma quantidade maior necessita da criação de um biblioteca
+    }
+);
 
-// Reconhce a base QnA Maker de acordo com a Id e SubKey especificada
+// Recognizers: define a resposta a ser enviada a classe dialog 
+// qna Threshold e defaultMessage: retorna uma mensagem padrão caso o indice de confiabilidade da resposta esteja abaixo do limite  
+const qnaMakerDialog = new cognitiveservices.QnAMakerDialog(
+    {
+        recognizers: [recognizer],
+        defaultMessage: 'Não entendi sua pergunta! Tente refazer a questão em outras palavras ;)',
+        qnaThreshold: 0.7
+    }
+);
 
-var recognizer = new cognitiveservices.QnAMakerRecognizer({
-	knowledgeBaseId: 'ff0355d2-845b-40e4-a76b-560a97398d3a', 
-	subscriptionKey: '98234eda420646daae5980d54222c1d9',
-    top: 1});
-    
-// Retorna uma mensagem padrão caso o indice de confiabilidade da resposta esteja abaixo do limite  
-
-var basicQnAMakerDialog = new cognitiveservices.QnAMakerDialog({
-	recognizers: [recognizer],
-	defaultMessage: 'Não entendi sua pergunta! Tente refazer a questão em outras palavras;)',
-	qnaThreshold: 0.5
-});
-
-bot.dialog('/',basicQnAMakerDialog);
+// Envia a resposta ao chat 
+bot.dialog('/', qnaMakerDialog);
