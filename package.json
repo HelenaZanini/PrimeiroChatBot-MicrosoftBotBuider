@@ -14,7 +14,6 @@
   "dependencies": {
     "botbuilder": "^3.14.0",
     "botbuilder-cognitiveservices": "^1.1.0",
-    "restify": "^6.3.4",
-    "npm": "^5.6.0"
+    "restify": "^6.3.4"
   }
 }
