@@ -12,8 +12,8 @@ server.listen(port, () => {console.log(`Servidor rodando em ${server.url}`);});
 // Criação de um canal de comunicação com o Bot Framework Service
 const connector = new builder.ChatConnector(
     {
-        appId: '',
-        appPassword: '',
+        appId: process.env.APP_ID,
+        appPassword: process.env.APP_PASSWORD,
     }
 );
 
@@ -30,8 +30,8 @@ bot.library(qnaMakerTools.createLibrary); */
 // Reconhce a base do QnA Maker de acordo com a Id e SubKey especificada
 const recognizer = new cognitiveservices.QnAMakerRecognizer(
     {
-        knowledgeBaseId: '',
-        subscriptionKey: '',
+        knowledgeBaseId: process.env.KNOWLEDGEBASE_ID,
+        subscriptionKey: process.env.SUBSCRIPTION_KEY,
         top: 1 // quantidade de respostas, por padrão é 1, e uma quantidade maior necessita da criação de um biblioteca
     }
 );
