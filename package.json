@@ -8,9 +8,6 @@
   },
   "author": "Helena Zanini",
   "license": "ISC",
-  "engines": {
-    "node": "^6.10.0"
-  },
   "dependencies": {
     "botbuilder": "^3.14.0",
     "botbuilder-cognitiveservices": "^1.1.0",

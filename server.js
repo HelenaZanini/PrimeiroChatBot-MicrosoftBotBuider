@@ -4,7 +4,7 @@ const restify = require('restify');
 const cognitiveservices = require('botbuilder-cognitiveservices');
 
 // Setup do servidor
-const port = 3978;
+const port = process.env.PORT || 3978;
 const server = restify.createServer();
 
 server.listen(port, () => {console.log(`Servidor rodando em ${server.url}`);});
